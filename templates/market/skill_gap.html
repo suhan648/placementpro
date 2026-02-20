@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block title %}Skill Gap Analyzer{% endblock %}
+{% block page_title %}Market Intelligence – Skill Gap Analyzer{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Form -->
+    <div class="col-lg-4">
+        <div class="pp-card">
+            <h6 class="mb-3 gradient-text" style="font-weight:700;"><i class="bi bi-graph-up-arrow me-2"></i>Analyze
+                Skill Gap</h6>
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="pp-label">Target Job Role</label>
+                    <select name="role_id" class="pp-select" required>
+                        <option value="">-- Select Role --</option>
+                        {% for r in roles %}
+                        <option value="{{ r.id }}" {% if selected_role==r.job_role %}selected{% endif %}>{{ r.job_role
+                            }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="pp-label">Your Current Skills <span class="note">(comma-separated)</span></label>
+                    <textarea name="user_skills" class="pp-textarea" rows="5"
+                        placeholder="Python, SQL, Excel, React...">{{ my_skills }}</textarea>
+                    {% if my_skills %}
+                    <p class="note mt-2"><i class="bi bi-check-circle me-1" style="color:var(--success);"></i>Pre-filled
+                        from your profile.</p>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn-pp-primary w-100">
+                    <i class="bi bi-search me-2"></i>Analyze Skill Gap
+                </button>
+            </form>
+        </div>
+
+        <!-- Available Roles -->
+        <div class="pp-card mt-3">
+            <h6 class="mb-3"
+                style="color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">Common
+                Roles</h6>
+            <div class="d-flex flex-wrap gap-2">
+                {% for r in roles %}
+                <span
+                    style="background:rgba(79,70,229,.1);border:1px solid rgba(79,70,229,.2);color:var(--primary-light);padding:4px 12px;border-radius:20px;font-size:.75rem;">{{
+                    r.job_role }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div class="col-lg-8">
+        {% if result %}
+        <div class="pp-card mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h6 class="gradient-text mb-0" style="font-weight:700;font-size:1.1rem;">{{ result.role }}</h6>
+                    <p class="note mb-0">Analysis based on market demand</p>
+                </div>
+                <span
+                    class="status-pill {% if result.pct >= 75 %}badge-selected{% elif result.pct >= 40 %}badge-aptitude_cleared{% else %}badge-rejected{% endif %}"
+                    style="font-size:.9rem;padding:6px 20px;">
+                    {{ result.pct }}% Match
+                </span>
+            </div>
+
+            <!-- Match Progress -->
+            <div class="mb-4">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="note" style="color:var(--text);">Skill Compatibility</span>
+                    <span class="note" style="font-weight:600;color:var(--primary-light);">{{ result.matched|length
+                        }}/{{ result.required|length }} skills</span>
+                </div>
+                <div class="skill-bar" style="height:14px;border-radius:10px;">
+                    <div class="skill-fill" style="width:{{ result.pct }}%;"></div>
+                </div>
+            </div>
+
+            {% if result.insight %}
+            <div
+                style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:24px;">
+                <p class="note mb-0" style="color:var(--text);"><i class="bi bi-lightbulb-fill me-2"
+                        style="color:var(--accent);"></i><strong>Market Insight:</strong> {{ result.insight }}</p>
+            </div>
+            {% endif %}
+
+            <div class="row g-4">
+                <!-- You Have -->
+                <div class="col-md-6">
+                    <div
+                        style="background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.2);border-radius:var(--radius-sm);padding:18px;height:100%;">
+                        <h6
+                            style="color:#4ade80;font-size:.82rem;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;">
+                            <i class="bi bi-check-circle-fill me-2"></i>Skills You Have ({{ result.matched|length }})
+                        </h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for sk in result.matched %}
+                            <span
+                                style="background:rgba(34,197,94,.15);color:#4ade80;padding:4px 12px;border-radius:20px;font-size:.78rem;font-weight:600;text-transform:capitalize;">{{
+                                sk }}</span>
+                            {% endfor %}
+                            {% if not result.matched %}
+                            <span class="note">No matching skills found.</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- You Need -->
+                <div class="col-md-6">
+                    <div
+                        style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.2);border-radius:var(--radius-sm);padding:18px;height:100%;">
+                        <h6
+                            style="color:#f87171;font-size:.82rem;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>Skills to Develop ({{
+                            result.missing|length }})
+                        </h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for sk in result.missing %}
+                            <span
+                                style="background:rgba(239,68,68,.15);color:#f87171;padding:4px 12px;border-radius:20px;font-size:.78rem;font-weight:600;text-transform:capitalize;">{{
+                                sk }}</span>
+                            {% endfor %}
+                            {% if not result.missing %}
+                            <span style="color:#4ade80;font-weight:600;"><i class="bi bi-emoji-smile me-1"></i>
+                                Excellent! You have all required skills.</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Path -->
+        {% if result.missing %}
+        <div class="pp-card">
+            <h6 class="mb-4 gradient-text" style="font-weight:700;"><i class="bi bi-map me-2"></i>Recommended Learning
+                Path</h6>
+            <div class="d-flex flex-column gap-3">
+                {% for sk in result.missing[:5] %}
+                <div
+                    style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 18px;display:flex;align-items:center;gap:15px;">
+                    <div
+                        style="background:linear-gradient(135deg,var(--primary),var(--accent));width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:.9rem;font-weight:700;color:#fff;min-width:32px;">
+                        {{ loop.index }}</div>
+                    <div style="flex:1;">
+                        <div style="font-weight:700;text-transform:capitalize;font-size:.95rem;">Master {{ sk }}</div>
+                        <div class="note">Recommended sources: Coursera, Udemy, or free tutorials on YouTube.</div>
+                    </div>
+                    <a href="https://www.google.com/search?q=best+{{ sk }}+course+for+beginners" target="_blank"
+                        class="btn-pp-outline" style="padding:6px 16px;font-size:.8rem;white-space:nowrap;">
+                        Find Courses <i class="bi bi-box-arrow-up-right ms-1" style="font-size:.7rem;"></i>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="pp-card text-center py-5">
+            <i class="bi bi-graph-up-arrow" style="font-size:4rem;color:var(--text-muted);opacity:.5;"></i>
+            <h5 class="mt-4" style="font-weight:700;color:var(--text);">Start Your Analysis</h5>
+            <p class="note mt-2 mx-auto" style="max-width:400px;">Select a target job role and input your current skills
+                on the left to see how you compare with industry requirements.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

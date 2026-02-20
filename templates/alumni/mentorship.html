@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Mentorship{% endblock %}
+{% block page_title %}Mentorship Slots{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    {% if session.role == 'alumni' %}
+    <!-- Alumni: Add Slot Panel -->
+    <div class="col-lg-4">
+        <div class="pp-card mb-3">
+            <h6 class="mb-3 gradient-text" style="font-weight:700;"><i class="bi bi-calendar-plus me-2"></i>Add
+                Availability</h6>
+            <form method="POST">
+                <input type="hidden" name="action" value="add_slot" />
+                <div class="mb-3">
+                    <label class="pp-label">Available Date & Time</label>
+                    <input type="datetime-local" name="available_time" class="pp-input" required />
+                </div>
+                <div class="mb-3">
+                    <label class="pp-label">Meeting Link (optional)</label>
+                    <input type="url" name="meeting_link" class="pp-input" placeholder="https://meet.google.com/..." />
+                </div>
+                <button type="submit" class="btn-pp-primary w-100"><i class="bi bi-plus me-2"></i>Add Slot</button>
+            </form>
+        </div>
+
+        <!-- My Slots -->
+        <div class="pp-card">
+            <h6 class="mb-3"
+                style="color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">My Slots
+            </h6>
+            {% if my_slots %}
+            <div class="d-flex flex-column gap-2">
+                {% for s in my_slots %}
+                <div class="schedule-card">
+                    <div>
+                        <div class="schedule-time">{{ s.available_time.strftime('%d %b %Y') if s.available_time else '—'
+                            }}</div>
+                        <div class="schedule-time" style="color:var(--primary-light);">{{
+                            s.available_time.strftime('%I:%M %p') if s.available_time else '' }}</div>
+                        {% if s.booked_by_name %}
+                        <div class="note mt-1" style="color:var(--success);"><i class="bi bi-person me-1"></i>Booked by:
+                            {{ s.booked_by_name }}</div>
+                        {% else %}
+                        <div class="note mt-1"><i class="bi bi-clock me-1"></i>Available</div>
+                        {% endif %}
+                    </div>
+                    <form method="POST">
+                        <input type="hidden" name="action" value="delete_slot" />
+                        <input type="hidden" name="slot_id" value="{{ s.id }}" />
+                        <button class="btn-pp-danger" type="submit" onclick="return confirm('Remove slot?')"><i
+                                class="bi bi-trash"></i></button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="note text-center py-2">No slots added yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-lg-8">
+        {% else %}
+        <div class="col-12">
+            {% endif %}
+            <div class="pp-card">
+                <h6 class="mb-3"
+                    style="color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">
+                    Available Mentorship Slots</h6>
+                {% if available_slots %}
+                <div class="d-flex flex-column gap-3">
+                    {% for s in available_slots %}
+                    <div
+                        style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px;display:flex;justify-content:space-between;align-items:center;gap:12px;">
+                        <div>
+                            <strong>{{ s.alumni_name }}</strong>
+                            {% if s.company %}<span class="note ms-2">{{ s.designation }}{% if s.company %} at {{
+                                s.company }}{% endif %}</span>{% endif %}
+                            <div class="note mt-2">
+                                <i class="bi bi-clock me-1"></i>{{ s.available_time.strftime('%d %b %Y, %I:%M %p') if
+                                s.available_time else '—' }}
+                            </div>
+                            {% if s.meeting_link %}<div class="note mt-1"><i class="bi bi-link-45deg me-1"></i><a
+                                    href="{{ s.meeting_link }}" target="_blank"
+                                    style="color:var(--primary-light);">Meeting Link</a></div>{% endif %}
+                        </div>
+                        {% if session.role == 'student' %}
+                        <form method="POST" action="{{ url_for('book_mentorship_slot', slot_id=s.id) }}">
+                            <button type="submit" class="btn-pp-primary" style="padding:8px 20px;font-size:.85rem;">
+                                <i class="bi bi-calendar-check me-2"></i>Book Slot
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-calendar-x" style="font-size:3rem;color:var(--text-muted);"></i>
+                    <p class="note mt-2">No mentorship slots available right now. Check back later.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endblock %}

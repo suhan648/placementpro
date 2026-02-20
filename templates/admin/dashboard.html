@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon icon-indigo"><i class="bi bi-person-fill"></i></div>
+            <div>
+                <div class="stat-val">{{ total_students }}</div>
+                <div class="stat-label">Total Students</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon icon-amber"><i class="bi bi-building"></i></div>
+            <div>
+                <div class="stat-val">{{ total_drives }}</div>
+                <div class="stat-label">Placement Drives</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon icon-emerald"><i class="bi bi-trophy-fill"></i></div>
+            <div>
+                <div class="stat-val">{{ placed }}</div>
+                <div class="stat-label">Students Placed</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon icon-sky"><i class="bi bi-file-earmark-check"></i></div>
+            <div>
+                <div class="stat-val">{{ total_applications }}</div>
+                <div class="stat-label">Applications</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-12">
+        <div class="pp-card">
+            <h6 class="mb-3"
+                style="color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">Quick
+                Actions</h6>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ url_for('admin_drives') }}" class="btn-pp-primary"><i class="bi bi-plus-circle me-2"></i>New
+                    Drive</a>
+                <a href="{{ url_for('admin_criteria') }}" class="btn-pp-outline"><i
+                        class="bi bi-funnel me-2"></i>Criteria Engine</a>
+                <a href="{{ url_for('admin_scheduler') }}" class="btn-pp-outline"><i
+                        class="bi bi-calendar-plus me-2"></i>Schedule Interview</a>
+                <a href="{{ url_for('admin_analytics') }}" class="btn-pp-outline"><i
+                        class="bi bi-bar-chart me-2"></i>Analytics</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="pp-card text-center h-100">
+            <p class="note mb-1">Placement Rate</p>
+            {% set rate = (placed / total_students * 100) | round(1) if total_students > 0 else 0 %}
+            <div style="font-size:3rem;font-weight:800;" class="gradient-text">{{ rate }}%</div>
+            <p class="note">{{ placed }} of {{ total_students }} students placed</p>
+            <div class="skill-bar mt-2">
+                <div class="skill-fill" style="width:{{ rate }}%"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="pp-card h-100">
+            <h6 class="mb-3"
+                style="color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">Recent
+                Drives</h6>
+            {% if recent_drives %}
+            <table class="pp-table">
+                <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Role</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Apps</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in recent_drives %}
+                    <tr>
+                        <td><strong>{{ d.company_name }}</strong></td>
+                        <td>{{ d.job_role }}</td>
+                        <td>{{ d.drive_date.strftime('%d %b %Y') if d.drive_date else '—' }}</td>
+                        <td><span class="status-pill badge-{{ d.status }}">{{ d.status }}</span></td>
+                        <td>{{ d.applicants }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="note text-center py-3">No drives yet. <a href="{{ url_for('admin_drives') }}">Create one!</a></p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

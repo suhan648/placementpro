@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Alumni Dashboard{% endblock %}
+{% block page_title %}Alumni Dashboard{% endblock %}
+{% block content %}
+<div class="row g-3 mb-4">
+    <div class="col-sm-4">
+        <div class="stat-card">
+            <div class="stat-icon icon-amber"><i class="bi bi-person-plus-fill"></i></div>
+            <div>
+                <div class="stat-val">{{ stats.referrals }}</div>
+                <div class="stat-label">Referrals Posted</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="stat-card">
+            <div class="stat-icon icon-indigo"><i class="bi bi-calendar3"></i></div>
+            <div>
+                <div class="stat-val">{{ stats.slots }}</div>
+                <div class="stat-label">Mentorship Slots</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="stat-card">
+            <div class="stat-icon icon-emerald"><i class="bi bi-check-circle-fill"></i></div>
+            <div>
+                <div class="stat-val">{{ stats.booked }}</div>
+                <div class="stat-label">Slots Booked</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="pp-card">
+            <h6 class="mb-3"
+                style="color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">Recent
+                Referrals on Board</h6>
+            {% if recent_referrals %}
+            <div class="d-flex flex-column gap-2">
+                {% for r in recent_referrals %}
+                <div
+                    style="background:var(--surface2);border-radius:var(--radius-sm);padding:14px;border:1px solid var(--border);">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>{{ r.company }}</strong> – <span class="note">{{ r.job_role }}</span>
+                            {% if r.deadline %}<div class="note mt-1"><i class="bi bi-calendar me-1"></i>Deadline: {{
+                                r.deadline.strftime('%d %b %Y') if r.deadline else r.deadline }}</div>{% endif %}
+                        </div>
+                        <span class="note">by {{ r.posted_by }}</span>
+                    </div>
+                    {% if r.description %}<p class="note mt-1 mb-0">{{ r.description[:120] }}{% if r.description|length
+                        > 120 %}…{% endif %}</p>{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="note text-center py-3">No referrals posted yet.</p>
+            {% endif %}
+            <div class="mt-3"><a href="{{ url_for('alumni_referrals') }}" class="btn-pp-outline">Post a Referral →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="pp-card">
+            <h6 class="mb-3"
+                style="color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">Quick
+                Actions</h6>
+            <div class="d-flex flex-column gap-2">
+                <a href="{{ url_for('alumni_referrals') }}" class="btn-pp-primary"><i
+                        class="bi bi-person-plus me-2"></i>Post Job Referral</a>
+                <a href="{{ url_for('alumni_mentorship') }}" class="btn-pp-outline"><i
+                        class="bi bi-calendar-plus me-2"></i>Add Mentorship Slot</a>
+                <a href="{{ url_for('skill_gap') }}" class="btn-pp-outline"><i
+                        class="bi bi-graph-up-arrow me-2"></i>Skill Gap Analyzer</a>
+                <a href="{{ url_for('chatbot') }}" class="btn-pp-outline"><i
+                        class="bi bi-robot me-2"></i>PlacementBot</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

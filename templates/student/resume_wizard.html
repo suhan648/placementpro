@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Resume Wizard{% endblock %}
+{% block page_title %}Resume Wizard{% endblock %}
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="pp-card">
+            <h6 class="mb-1 gradient-text" style="font-weight:700;font-size:1rem;"><i
+                    class="bi bi-file-earmark-pdf me-2"></i>Resume Preview</h6>
+            <p class="note mb-4">Auto-generated from your profile. <a href="{{ url_for('student_profile') }}">Update
+                    profile</a> to change content.</p>
+            <div
+                style="background:#fff;border-radius:var(--radius);padding:32px;color:#111;font-family:'Inter',sans-serif;box-shadow:0 4px 24px rgba(0,0,0,.2);">
+                <div style="text-align:center;border-bottom:3px solid #4f46e5;padding-bottom:16px;margin-bottom:20px;">
+                    <h2 style="font-size:1.6rem;font-weight:800;color:#3730a3;margin:0;">{{ profile.name }}</h2>
+                    <p style="font-size:.85rem;color:#6b7280;margin:6px 0 0;">
+                        {{ profile.email }}
+                        {% if profile.phone %} | {{ profile.phone }}{% endif %}
+                        {% if profile.linkedin %} | <a href="{{ profile.linkedin }}"
+                            style="color:#4f46e5;">LinkedIn</a>{% endif %}
+                        {% if profile.github %} | <a href="{{ profile.github }}" style="color:#4f46e5;">GitHub</a>{%
+                        endif %}
+                    </p>
+                </div>
+                {% if profile.branch or profile.cgpa %}
+                <div style="margin-bottom:16px;">
+                    <h4
+                        style="font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#3730a3;border-bottom:1px solid #e5e7eb;padding-bottom:4px;margin-bottom:10px;">
+                        Education</h4>
+                    <p style="margin:0;font-size:.9rem;"><strong>{{ profile.branch or '—' }}</strong> | CGPA: <strong>{{
+                            profile.cgpa or '—' }}</strong> | Roll No: {{ profile.roll_number or '—' }} | Backlogs: {{
+                        profile.backlogs or 0 }}</p>
+                </div>
+                {% endif %}
+                {% if profile.skills %}
+                <div style="margin-bottom:16px;">
+                    <h4
+                        style="font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#3730a3;border-bottom:1px solid #e5e7eb;padding-bottom:4px;margin-bottom:10px;">
+                        Technical Skills</h4>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                        {% for sk in profile.skills.split(',') %}
+                        <span
+                            style="background:#ede9fe;color:#4f46e5;padding:2px 10px;border-radius:20px;font-size:.78rem;font-weight:600;">{{
+                            sk.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                {% if profile.projects %}
+                <div style="margin-bottom:16px;">
+                    <h4
+                        style="font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#3730a3;border-bottom:1px solid #e5e7eb;padding-bottom:4px;margin-bottom:10px;">
+                        Projects</h4>
+                    {% for line in profile.projects.split('\n') %}{% if line.strip() %}<p
+                        style="margin:0 0 4px;font-size:.85rem;">• {{ line.strip() }}</p>{% endif %}{% endfor %}
+                </div>
+                {% endif %}
+                {% if profile.internships %}
+                <div style="margin-bottom:16px;">
+                    <h4
+                        style="font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#3730a3;border-bottom:1px solid #e5e7eb;padding-bottom:4px;margin-bottom:10px;">
+                        Internships</h4>
+                    {% for line in profile.internships.split('\n') %}{% if line.strip() %}<p
+                        style="margin:0 0 4px;font-size:.85rem;">• {{ line.strip() }}</p>{% endif %}{% endfor %}
+                </div>
+                {% endif %}
+                {% if profile.certifications %}
+                <div>
+                    <h4
+                        style="font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#3730a3;border-bottom:1px solid #e5e7eb;padding-bottom:4px;margin-bottom:10px;">
+                        Certifications</h4>
+                    {% for line in profile.certifications.split('\n') %}{% if line.strip() %}<p
+                        style="margin:0 0 4px;font-size:.85rem;">• {{ line.strip() }}</p>{% endif %}{% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="pp-card mb-3">
+            <h6 class="mb-3"
+                style="color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">Download
+            </h6>
+            <a href="{{ url_for('download_resume') }}" class="btn-pp-primary"
+                style="display:block;text-align:center;padding:12px;">
+                <i class="bi bi-file-earmark-pdf me-2" style="font-size:1.2rem;"></i>Download PDF Resume
+            </a>
+            <p class="note text-center mt-2">Standard A4 format, ATS-friendly</p>
+        </div>
+        <div class="pp-card">
+            <h6 class="mb-3"
+                style="color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">Tips</h6>
+            <ul style="list-style:none;padding:0;font-size:.83rem;color:var(--text-muted);"
+                class="d-flex flex-column gap-2">
+                <li><i class="bi bi-check-circle text-success me-2"></i>List 8–12 relevant technical skills</li>
+                <li><i class="bi bi-check-circle text-success me-2"></i>Each project: name, tech, outcome</li>
+                <li><i class="bi bi-check-circle text-success me-2"></i>Internship: company, role, duration</li>
+                <li><i class="bi bi-check-circle text-success me-2"></i>Add LinkedIn & GitHub URLs</li>
+            </ul>
+            <div class="divider"></div>
+            <a href="{{ url_for('student_profile') }}" class="btn-pp-outline"
+                style="display:block;text-align:center;"><i class="bi bi-pencil me-2"></i>Edit Profile</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

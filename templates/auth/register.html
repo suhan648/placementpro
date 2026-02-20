@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+
+{% block full_content %}
+<div class="auth-body">
+    <div class="auth-card" style="max-width:480px;">
+        <div class="auth-logo">
+            <div class="logo-icon"><i class="bi bi-mortarboard-fill"></i></div>
+            <div>
+                <div class="logo-text gradient-text">PlacementPro</div>
+                <div class="logo-sub">Integrated Campus Career Suite</div>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }} mb-3">{{ msg }}</div>
+        {% endfor %}
+        {% endwith %}
+
+        <h5 class="mb-4"
+            style="color:var(--text-muted);font-size:.85rem;text-align:center;text-transform:uppercase;letter-spacing:.1em;">
+            Create Your Account</h5>
+
+        <form method="POST" action="{{ url_for('register') }}">
+            <div class="mb-3">
+                <label class="pp-label"><i class="bi bi-person me-1"></i> Full Name</label>
+                <input type="text" name="name" class="pp-input" placeholder="John Doe" required />
+            </div>
+            <div class="mb-3">
+                <label class="pp-label"><i class="bi bi-envelope me-1"></i> Email Address</label>
+                <input type="email" name="email" class="pp-input" placeholder="you@college.edu" required />
+            </div>
+            <div class="mb-3">
+                <label class="pp-label"><i class="bi bi-people me-1"></i> Role</label>
+                <select name="role" class="pp-select" required>
+                    <option value="student">🎓 Student</option>
+                    <option value="alumni">👨‍💼 Alumni</option>
+                    <option value="admin">⚙️ Admin (TPO)</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="pp-label"><i class="bi bi-lock me-1"></i> Password</label>
+                <input type="password" name="password" class="pp-input" placeholder="Minimum 6 characters" required
+                    minlength="6" />
+            </div>
+            <div class="mb-4">
+                <label class="pp-label"><i class="bi bi-lock-fill me-1"></i> Confirm Password</label>
+                <input type="password" name="confirm_password" class="pp-input" placeholder="Repeat password"
+                    required />
+            </div>
+            <button type="submit" class="btn-pp-primary w-100 py-3" style="font-size:.95rem;">
+                <i class="bi bi-person-plus me-2"></i> Create Account
+            </button>
+        </form>
+
+        <div class="divider"></div>
+        <p class="text-center note">
+            Already registered?
+            <a href="{{ url_for('login') }}" style="color:var(--primary-light);font-weight:600;">Sign In</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

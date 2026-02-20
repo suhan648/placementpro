@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}403 Forbidden{% endblock %}
+
+{% block full_content %}
+<div class="auth-body">
+    <div class="auth-card text-center">
+        <div style="font-size:5rem;font-weight:900;" class="gradient-text">403</div>
+        <h4 class="mb-2">Access Denied</h4>
+        <p class="note mb-4">You don't have permission to view this page.</p>
+        <a href="{{ url_for('dashboard_redirect') }}" class="btn-pp-primary">← Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

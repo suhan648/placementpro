@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Job Referrals{% endblock %}
+{% block page_title %}Job Referral Board{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    {% if session.role == 'alumni' %}
+    <div class="col-lg-4">
+        <div class="pp-card">
+            <h6 class="mb-3 gradient-text" style="font-weight:700;"><i class="bi bi-plus-circle me-2"></i>Post a
+                Referral</h6>
+            <form method="POST">
+                <input type="hidden" name="action" value="post" />
+                <div class="mb-3">
+                    <label class="pp-label">Company</label>
+                    <input type="text" name="company" class="pp-input" placeholder="e.g. Google" required />
+                </div>
+                <div class="mb-3">
+                    <label class="pp-label">Job Role</label>
+                    <input type="text" name="job_role" class="pp-input" placeholder="e.g. SDE-2" required />
+                </div>
+                <div class="mb-3">
+                    <label class="pp-label">Description</label>
+                    <textarea name="description" class="pp-textarea" rows="4"
+                        placeholder="Requirements, experience needed..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="pp-label">Apply Link</label>
+                    <input type="url" name="apply_link" class="pp-input" placeholder="https://jobs.example.com" />
+                </div>
+                <div class="mb-3">
+                    <label class="pp-label">Application Deadline</label>
+                    <input type="date" name="deadline" class="pp-input" />
+                </div>
+                <button type="submit" class="btn-pp-primary w-100"><i class="bi bi-send me-2"></i>Post Referral</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        {% else %}
+        <div class="col-12">
+            {% endif %}
+            <div class="pp-card">
+                <h6 class="mb-3"
+                    style="color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">
+                    Referral Board ({{ referrals|length }})</h6>
+                {% if referrals %}
+                <div class="d-flex flex-column gap-3">
+                    {% for r in referrals %}
+                    <div
+                        style="background:var(--surface2);border:1PX solid var(--border);border-radius:var(--radius-sm);padding:18px;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong style="font-size:.95rem;">{{ r.company }}</strong> – <span class="note">{{
+                                    r.job_role }}</span>
+                                <div class="note mt-2">Posted by <strong>{{ r.posted_by }}</strong> · {{
+                                    r.posted_at.strftime('%d %b %Y') if r.posted_at else '' }}</div>
+                                {% if r.deadline %}<div class="note"><i class="bi bi-calendar me-1"></i>Deadline: {{
+                                    r.deadline.strftime('%d %b %Y') if r.deadline else r.deadline }}</div>{% endif %}
+                            </div>
+                            {% if r.is_mine %}
+                            <form method="POST">
+                                <input type="hidden" name="action" value="delete" />
+                                <input type="hidden" name="ref_id" value="{{ r.id }}" />
+                                <button class="btn-pp-danger" type="submit"
+                                    onclick="return confirm('Delete this referral?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                        {% if r.description %}<p class="note mt-3 mb-3">{{ r.description }}</p>{% endif %}
+                        {% if r.apply_link %}
+                        <a href="{{ r.apply_link }}" target="_blank" class="btn-pp-primary"
+                            style="padding:6px 20px;font-size:.82rem;">
+                            <i class="bi bi-box-arrow-up-right me-2"></i>Apply Now
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox" style="font-size:3rem;color:var(--text-muted);"></i>
+                    <p class="note mt-2">No referrals posted yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endblock %}

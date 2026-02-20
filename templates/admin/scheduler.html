@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Interview Scheduler{% endblock %}
+{% block page_title %}Interview Scheduler{% endblock %}
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="pp-card">
+            <h6 class="mb-3 gradient-text" style="font-weight:700;"><i class="bi bi-calendar-plus me-2"></i>Schedule
+                Interview</h6>
+            <form method="POST">
+                <input type="hidden" name="action" value="schedule" />
+                <div class="mb-3"><label class="pp-label">Drive</label>
+                    <select name="drive_id" class="pp-select" required>
+                        <option value="">-- Select Drive --</option>
+                        {% for d in drives %}<option value="{{ d.id }}">{{ d.company_name }} – {{ d.job_role }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3"><label class="pp-label">Student</label>
+                    <select name="student_id" class="pp-select" required>
+                        <option value="">-- Select Student --</option>
+                        {% for s in students %}<option value="{{ s.id }}">{{ s.name }} ({{ s.branch }}, {{ s.cgpa }}
+                            CGPA)</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3"><label class="pp-label">Date & Time</label>
+                    <input type="datetime-local" name="time_slot" class="pp-input" required />
+                </div>
+                <div class="mb-3"><label class="pp-label">Venue</label>
+                    <input type="text" name="venue" class="pp-input" placeholder="Room 101 / Online" />
+                </div>
+                <div class="mb-3"><label class="pp-label">Notes</label>
+                    <textarea name="notes" class="pp-textarea" rows="2"
+                        placeholder="Technical round, bring ID..."></textarea>
+                </div>
+                <button type="submit" class="btn-pp-primary w-100"><i
+                        class="bi bi-calendar-check me-2"></i>Schedule</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="pp-card">
+            <h6 class="mb-3"
+                style="color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">Scheduled
+                Interviews ({{ interviews|length }})</h6>
+            {% if interviews %}
+            <div class="d-flex flex-column gap-2">
+                {% for iv in interviews %}
+                <div class="schedule-card">
+                    <div>
+                        <div style="font-weight:600;font-size:.9rem;">{{ iv.student_name }}</div>
+                        <div class="note">{{ iv.company_name }} – {{ iv.job_role }}</div>
+                        {% if iv.venue %}<div class="note"><i class="bi bi-geo-alt me-1"></i>{{ iv.venue }}</div>{%
+                        endif %}
+                        {% if iv.notes %}<div class="note"><i class="bi bi-chat me-1"></i>{{ iv.notes }}</div>{% endif
+                        %}
+                    </div>
+                    <div class="text-end">
+                        <div class="schedule-time">{{ iv.time_slot.strftime('%d %b %Y') if iv.time_slot else '—' }}
+                        </div>
+                        <div class="schedule-time" style="color:var(--primary-light);">{{ iv.time_slot.strftime('%I:%M
+                            %p') if iv.time_slot else '' }}</div>
+                        <form method="POST" class="mt-1">
+                            <input type="hidden" name="action" value="delete" />
+                            <input type="hidden" name="interview_id" value="{{ iv.id }}" />
+                            <button class="btn-pp-danger" type="submit" onclick="return confirm('Remove?')"><i
+                                    class="bi bi-trash"></i></button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5"><i class="bi bi-calendar-x"
+                    style="font-size:3rem;color:var(--text-muted);"></i>
+                <p class="note mt-2">No interviews scheduled yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

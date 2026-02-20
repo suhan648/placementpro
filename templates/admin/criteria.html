@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Criteria Engine{% endblock %}
+{% block page_title %}Criteria Engine{% endblock %}
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="pp-card">
+            <h6 class="mb-3 gradient-text" style="font-weight:700;"><i class="bi bi-funnel me-2"></i>Filter Eligible
+                Students</h6>
+            <form method="POST">
+                <input type="hidden" name="action" value="filter" />
+                <div class="mb-3">
+                    <label class="pp-label">Select Drive</label>
+                    <select name="drive_id" class="pp-select" required>
+                        <option value="">-- Choose Drive --</option>
+                        {% for d in drives %}
+                        <option value="{{ d.id }}" {% if selected_drive and selected_drive.id==d.id %}selected{% endif
+                            %}>
+                            {{ d.company_name }} – {{ d.job_role }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn-pp-primary w-100 mb-2"><i class="bi bi-search me-2"></i>Find Eligible
+                    Students</button>
+            </form>
+            {% if selected_drive %}
+            <div class="divider"></div>
+            <div style="font-size:.82rem;color:var(--text-muted);">
+                <p class="mb-1"><strong style="color:var(--text);">Drive:</strong> {{ selected_drive.company_name }} –
+                    {{ selected_drive.job_role }}</p>
+                <p class="mb-1"><strong style="color:var(--text);">Min CGPA:</strong> {{ selected_drive.min_cgpa }}</p>
+                <p class="mb-1"><strong style="color:var(--text);">Max Backlogs:</strong> {{ selected_drive.max_backlogs
+                    }}</p>
+                <p class="mb-0"><strong style="color:var(--text);">Branches:</strong> {{ selected_drive.allowed_branches
+                    | join(', ') }}</p>
+            </div>
+            {% if eligible %}
+            <div class="divider"></div>
+            <form method="POST">
+                <input type="hidden" name="action" value="notify" />
+                <input type="hidden" name="drive_id" value="{{ selected_drive.id }}" />
+                <button type="submit" class="btn-pp-success w-100"
+                    onclick="return confirm('Notify {{ total_eligible }} students?')">
+                    <i class="bi bi-envelope-fill me-2"></i>Notify All ({{ total_eligible }}) via Email
+                </button>
+            </form>
+            {% endif %}
+            {% endif %}
+        </div>
+        {% if total_eligible > 0 %}
+        <div class="pp-card mt-3 text-center">
+            <div style="font-size:2.5rem;font-weight:800;" class="gradient-text">{{ total_eligible }}</div>
+            <p class="note">Eligible Students Found</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-lg-8">
+        <div class="pp-card">
+            <h6 class="mb-3"
+                style="color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">
+                Eligible Students {% if total_eligible %}<span style="color:var(--accent);">({{ total_eligible
+                    }})</span>{% endif %}
+            </h6>
+            {% if eligible %}
+            <div class="table-responsive">
+                <table class="pp-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Roll No.</th>
+                            <th>Branch</th>
+                            <th>CGPA</th>
+                            <th>Backlogs</th>
+                            <th>Skills</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in eligible %}
+                        <tr>
+                            <td><strong>{{ s.name }}</strong></td>
+                            <td style="font-size:.8rem;color:var(--text-muted);">{{ s.email }}</td>
+                            <td>{{ s.roll_number or '—' }}</td>
+                            <td><span class="status-pill badge-upcoming">{{ s.branch or '—' }}</span></td>
+                            <td><strong style="color:var(--success);">{{ s.cgpa }}</strong></td>
+                            <td>{{ s.backlogs or 0 }}</td>
+                            <td style="font-size:.75rem;color:var(--text-muted);max-width:160px;">
+                                {{ (s.skills or '—')[:60] }}{% if s.skills and s.skills|length > 60 %}…{% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% elif selected_drive %}
+            <div class="text-center py-5"><i class="bi bi-people" style="font-size:3rem;color:var(--text-muted);"></i>
+                <p class="note mt-2">No students match the criteria for this drive.</p>
+            </div>
+            {% else %}
+            <div class="text-center py-5"><i class="bi bi-funnel" style="font-size:3rem;color:var(--text-muted);"></i>
+                <p class="note mt-2">Select a drive and click Find Eligible Students.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

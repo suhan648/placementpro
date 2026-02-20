@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+{% block content %}
+<form method="POST">
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="pp-card text-center mb-3">
+                <div class="avatar mx-auto mb-3" style="width:72px;height:72px;font-size:2rem;">{{
+                    session.user_name[0]|upper }}</div>
+                <div style="font-weight:700;font-size:1rem;">{{ session.user_name }}</div>
+                <div class="note">{{ session.email }}</div>
+                <div class="mt-2">
+                    {% if profile and profile.profile_complete %}
+                    <span class="status-pill badge-selected"><i class="bi bi-check-circle me-1"></i>Complete</span>
+                    {% else %}
+                    <span class="status-pill badge-rejected"><i class="bi bi-x-circle me-1"></i>Incomplete</span>
+                    {% endif %}
+                </div>
+                <div class="divider"></div>
+                <a href="{{ url_for('download_resume') }}" class="btn-pp-primary" style="display:block;"><i
+                        class="bi bi-download me-2"></i>Download Resume PDF</a>
+            </div>
+            <div class="pp-card">
+                <h6 class="mb-3"
+                    style="color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">
+                    Academic Info</h6>
+                <div class="mb-3"><label class="pp-label">Full Name</label>
+                    <input type="text" name="name" class="pp-input" value="{{ session.user_name }}" />
+                </div>
+                <div class="mb-3"><label class="pp-label">Roll Number</label>
+                    <input type="text" name="roll_number" class="pp-input"
+                        value="{{ profile.roll_number if profile else '' }}" />
+                </div>
+                <div class="mb-3"><label class="pp-label">Branch</label>
+                    <select name="branch" class="pp-select">
+                        <option value="">-- Select --</option>
+                        {% for br in branches %}
+                        <option value="{{ br }}" {% if profile and profile.branch==br %}selected{% endif %}>{{ br }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="row g-2">
+                    <div class="col-6"><label class="pp-label">CGPA</label>
+                        <input type="number" name="cgpa" class="pp-input" step="0.01" min="0" max="10"
+                            value="{{ profile.cgpa if profile else '' }}" />
+                    </div>
+                    <div class="col-6"><label class="pp-label">Backlogs</label>
+                        <input type="number" name="backlogs" class="pp-input" min="0"
+                            value="{{ profile.backlogs if profile else 0 }}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="pp-card mb-3">
+                <h6 class="mb-3"
+                    style="color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">
+                    Contact & Links</h6>
+                <div class="row g-3">
+                    <div class="col-md-6"><label class="pp-label">Phone</label>
+                        <input type="text" name="phone" class="pp-input"
+                            value="{{ profile.phone if profile else '' }}" />
+                    </div>
+                    <div class="col-md-6"><label class="pp-label">LinkedIn URL</label>
+                        <input type="url" name="linkedin" class="pp-input"
+                            value="{{ profile.linkedin if profile else '' }}" />
+                    </div>
+                    <div class="col-md-6"><label class="pp-label">GitHub URL</label>
+                        <input type="url" name="github" class="pp-input"
+                            value="{{ profile.github if profile else '' }}" />
+                    </div>
+                    <div class="col-12"><label class="pp-label">Address</label>
+                        <textarea name="address" class="pp-textarea"
+                            rows="2">{{ profile.address if profile else '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="pp-card mb-3">
+                <h6 class="mb-3"
+                    style="color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">
+                    Skills & Experience</h6>
+                <div class="mb-3"><label class="pp-label">Technical Skills <span
+                            class="note">(comma-separated)</span></label>
+                    <textarea name="skills" class="pp-textarea" rows="2"
+                        placeholder="Python, Java, SQL...">{{ profile.skills if profile else '' }}</textarea>
+                </div>
+                <div class="mb-3"><label class="pp-label">Certifications</label>
+                    <textarea name="certifications" class="pp-textarea"
+                        rows="2">{{ profile.certifications if profile else '' }}</textarea>
+                </div>
+                <div class="mb-3"><label class="pp-label">Internships</label>
+                    <textarea name="internships" class="pp-textarea" rows="3"
+                        placeholder="Company | Role | Duration (one per line)">{{ profile.internships if profile else '' }}</textarea>
+                </div>
+                <div class="mb-0"><label class="pp-label">Projects</label>
+                    <textarea name="projects" class="pp-textarea" rows="3"
+                        placeholder="Name | Tech Stack | Description (one per line)">{{ profile.projects if profile else '' }}</textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn-pp-primary" style="font-size:.95rem;padding:10px 28px;"><i
+                    class="bi bi-save me-2"></i>Save Profile</button>
+        </div>
+    </div>
+</form>
+{% endblock %}

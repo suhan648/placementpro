@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Application Tracker{% endblock %}
+{% block page_title %}Application Status Tracker{% endblock %}
+{% block content %}
+{% if apps %}
+<div class="d-flex flex-column gap-4">
+    {% for a in apps %}
+    <div class="pp-card">
+        <div class="row align-items-start g-3">
+            <div class="col-md-4">
+                <strong style="font-size:1rem;">{{ a.company_name }}</strong>
+                <div class="note">{{ a.job_role }}</div>
+                {% if a.package_lpa %}<div style="color:var(--success);font-weight:700;font-size:.85rem;">₹{{
+                    a.package_lpa }} LPA</div>{% endif %}
+                <div class="note mt-1"><i class="bi bi-calendar me-1"></i>{{ a.drive_date.strftime('%d %b %Y') if
+                    a.drive_date else 'Date TBD' }}</div>
+                {% if a.venue %}<div class="note"><i class="bi bi-geo-alt me-1"></i>{{ a.venue }}</div>{% endif %}
+                <div class="mt-2"><span class="status-pill badge-{{ a.status }}" style="font-size:.78rem;">{{
+                        a.status|replace('_',' ')|title }}</span></div>
+                <div class="note mt-1">Applied: {{ a.applied_at.strftime('%d %b %Y') if a.applied_at else '—' }}</div>
+                {% if a.interview_time %}
+                <div class="mt-2"
+                    style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:8px 12px;">
+                    <div class="note" style="color:var(--warning);font-weight:700;">Interview Scheduled</div>
+                    <div class="note"><i class="bi bi-clock me-1"></i>{{ a.interview_time.strftime('%d %b %Y, %I:%M %p')
+                        if a.interview_time else '—' }}</div>
+                    {% if a.interview_venue %}<div class="note"><i class="bi bi-geo-alt me-1"></i>{{ a.interview_venue
+                        }}</div>{% endif %}
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-md-8">
+                <div class="timeline">
+                    {% set statuses = [
+                    ('applied','Application Submitted','bi-send'),
+                    ('aptitude_cleared','Aptitude Test Cleared','bi-patch-check'),
+                    ('interview_scheduled','Interview Scheduled','bi-calendar-event'),
+                    ('selected','Selected / Offer Received','bi-trophy'),
+                    ] %}
+                    {% set order = {'applied':0,'aptitude_cleared':1,'interview_scheduled':2,'selected':3,'rejected':4}
+                    %}
+                    {% set cur = a.status %}
+                    {% set cur_idx = order.get(cur, 0) %}
+                    {% if cur == 'rejected' %}
+                    <div class="tl-item">
+                        <div class="tl-dot done"></div>
+                        <div style="font-size:.85rem;font-weight:600;">Application Submitted</div>
+                        <div class="note">Applied</div>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-dot" style="background:#ef4444;"></div>
+                        <div style="font-size:.85rem;font-weight:600;color:#f87171;">Not Selected</div>
+                        <div class="note">Better luck next time!</div>
+                    </div>
+                    {% else %}
+                    {% for key, label, icon in statuses %}
+                    {% set idx = order[key] %}
+                    <div class="tl-item">
+                        <div
+                            class="tl-dot {% if idx < cur_idx %}done{% elif idx == cur_idx %}current{% else %}pending{% endif %}">
+                        </div>
+                        <div
+                            style="font-size:.85rem;font-weight:600;opacity:{% if idx <= cur_idx %}1{% else %}.4{% endif %};">
+                            <i class="bi {{ icon }} me-1"></i>{{ label }}
+                        </div>
+                        {% if idx < cur_idx %}<div class="note" style="color:var(--success);">✓ Completed
+                    </div>{% endif %}
+                    {% if idx == cur_idx %}<div class="note" style="color:var(--warning);">● Current Stage</div>{% endif
+                    %}
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+</div>
+{% else %}
+<div class="pp-card text-center py-5">
+    <i class="bi bi-clipboard-x" style="font-size:3rem;color:var(--text-muted);"></i>
+    <p class="note mt-3">No applications yet.</p>
+    <a href="{{ url_for('student_drives') }}" class="btn-pp-primary mt-2">Browse Drives</a>
+</div>
+{% endif %}
+{% endblock %}

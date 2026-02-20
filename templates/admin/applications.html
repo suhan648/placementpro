@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}All Applications{% endblock %}
+{% block page_title %}All Applications{% endblock %}
+{% block content %}
+<div class="pp-card">
+    <h6 class="mb-3" style="color:var(--text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">
+        Applications ({{ applications|length }})</h6>
+    {% if applications %}
+    <div class="table-responsive">
+        <table class="pp-table">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Branch</th>
+                    <th>CGPA</th>
+                    <th>Company</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Applied</th>
+                    <th>Update</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in applications %}
+                <tr>
+                    <td><strong>{{ a.student_name }}</strong></td>
+                    <td>{{ a.branch or '—' }}</td>
+                    <td>{{ a.cgpa }}</td>
+                    <td>{{ a.company_name }}</td>
+                    <td>{{ a.job_role }}</td>
+                    <td><span class="status-pill badge-{{ a.status }}">{{ a.status|replace('_',' ')|title }}</span></td>
+                    <td class="note">{{ a.applied_at.strftime('%d %b %Y') if a.applied_at else '—' }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('admin_update_status') }}" style="display:flex;gap:6px;">
+                            <input type="hidden" name="app_id" value="{{ a.id }}" />
+                            <select name="status" class="pp-select"
+                                style="padding:4px 8px;font-size:.75rem;width:auto;">
+                                {% for st in ['applied','aptitude_cleared','interview_scheduled','selected','rejected']
+                                %}
+                                <option value="{{ st }}" {% if a.status==st %}selected{% endif %}>{{ st|replace('_','
+                                    ')|title }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="btn-pp-success" type="submit"><i class="bi bi-check2"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5"><i class="bi bi-inbox" style="font-size:3rem;color:var(--text-muted);"></i>
+        <p class="note mt-2">No applications yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
