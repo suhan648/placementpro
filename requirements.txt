@@ -3,4 +3,5 @@ pymongo==4.8.0
 Flask-Mail==0.10.0
 reportlab==4.2.2
 python-dotenv==1.0.1
+gunicorn==21.2.0
 Werkzeug==3.0.3
